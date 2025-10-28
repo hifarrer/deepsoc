@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 import axios from 'axios'
 
 const APIFY_API_TOKEN = process.env.APIFY_API_TOKEN
-
+ 
 export async function POST(request: NextRequest) {
   try {
     if (!APIFY_API_TOKEN) {
