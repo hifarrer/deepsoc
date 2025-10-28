@@ -1,4 +1,5 @@
 'use client'
+import Image from 'next/image'
 
 interface RedditCardProps {
   post: {
@@ -45,10 +46,12 @@ export default function RedditCard({ post }: RedditCardProps) {
       <div className="flex items-start space-x-3 mb-4">
         <div className="flex-shrink-0">
           {post.authorAvatar ? (
-            <img
-              src={post.authorAvatar}
+            <Image
+              src={post.authorAvatar!}
               alt={post.authorName || 'Reddit user'}
-              className="w-10 h-10 rounded-full object-cover"
+              width={40}
+              height={40}
+              className="rounded-full object-cover"
             />
           ) : (
             <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white font-semibold">
@@ -135,10 +138,11 @@ export default function RedditCard({ post }: RedditCardProps) {
           }`}>
             {post.mediaUrls.slice(0, 4).map((url, index) => (
               <div key={index} className="relative">
-                <img
+                <Image
                   src={url}
                   alt={`Reddit media ${index + 1}`}
-                  className="w-full h-48 object-cover rounded-lg"
+                  fill
+                  className="object-cover rounded-lg"
                 />
                 {post.mediaUrls && post.mediaUrls.length > 4 && index === 3 && (
                   <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">

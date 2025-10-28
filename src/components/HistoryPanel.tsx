@@ -108,7 +108,7 @@ export default function HistoryPanel({ onSelectSearch, isOpen, onClose }: Histor
                 >
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-semibold text-gray-800 truncate">
-                      "{search.keyword}"
+                      &quot;{search.keyword}&quot;
                     </h3>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(search.status)}`}>
                       {search.status}

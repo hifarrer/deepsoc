@@ -1,4 +1,5 @@
 'use client'
+import Image from 'next/image'
 
 interface YouTubeCardProps {
   video: any
@@ -52,10 +53,11 @@ export default function YouTubeCard({ video }: YouTubeCardProps) {
       {/* Thumbnail */}
       <div className="relative aspect-video bg-gray-100">
         {getThumbnailUrl() ? (
-          <img
-            src={getThumbnailUrl()}
+          <Image
+            src={getThumbnailUrl()!}
             alt={getTitle()}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
             onError={(e) => {
               e.currentTarget.style.display = 'none'
             }}

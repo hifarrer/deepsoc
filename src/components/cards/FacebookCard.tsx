@@ -1,4 +1,5 @@
 'use client'
+import Image from 'next/image'
 
 interface FacebookCardProps {
   post: {
@@ -45,9 +46,9 @@ export default function FacebookCard({ post }: FacebookCardProps) {
   }
 
   // Helper functions to get data from either structure
-  const getAuthorName = () => post['authorMeta.name'] || post.authorMeta?.name || 'Facebook User'
-  const getAuthorAvatar = () => post['authorMeta.avatar'] || post.authorMeta?.avatar
-  const getAuthorVerified = () => post['authorMeta.verified'] || post.authorMeta?.verified || false
+  const getAuthorName = () => post.authorMeta?.name || 'Facebook User'
+  const getAuthorAvatar = () => post.authorMeta?.avatar
+  const getAuthorVerified = () => post.authorMeta?.verified || false
   const getThumbnailUrl = () => post.thumbnailUrl || ''
   const getPostUrl = () => post.postUrl || ''
   const getLikesCount = () => post.likesCount || 0
@@ -62,10 +63,11 @@ export default function FacebookCard({ post }: FacebookCardProps) {
       {/* Post Thumbnail */}
       {getThumbnailUrl() && (
         <div className="relative aspect-video bg-gray-100">
-          <img
+          <Image
             src={getThumbnailUrl()}
             alt="Facebook post thumbnail"
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
           {post.isSponsored && (
             <div className="absolute top-2 left-2">
@@ -82,10 +84,12 @@ export default function FacebookCard({ post }: FacebookCardProps) {
         <div className="flex items-center space-x-3 mb-3">
           <div className="flex-shrink-0">
             {getAuthorAvatar() ? (
-              <img
-                src={getAuthorAvatar()}
+              <Image
+                src={getAuthorAvatar()!}
                 alt={getAuthorName()}
-                className="w-10 h-10 rounded-full object-cover"
+                width={40}
+                height={40}
+                className="rounded-full object-cover"
               />
             ) : (
               <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">

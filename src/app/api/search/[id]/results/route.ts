@@ -243,7 +243,7 @@ export async function GET(
         for (const video of youtubePosts.slice(0, 50)) {
           if (!video.id) continue
           
-          await prisma.youtubeResult.create({
+          await prisma.youTubeResult.create({
             data: {
               searchId,
               videoId: video.id,

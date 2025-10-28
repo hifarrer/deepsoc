@@ -96,7 +96,7 @@ export default function SearchPage({ params }: SearchPageProps) {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">Search Not Found</h2>
-          <p className="text-gray-600 mb-8">The search you're looking for doesn't exist or you don't have permission to view it.</p>
+          <p className="text-gray-600 mb-8">The search you&apos;re looking for doesn&apos;t exist or you don&apos;t have permission to view it.</p>
           <button
             onClick={() => router.push('/')}
             className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 font-medium"
@@ -144,7 +144,7 @@ export default function SearchPage({ params }: SearchPageProps) {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                Search Results for "{searchData.keyword}"
+                Search Results for &quot;{searchData.keyword}&quot;
               </h2>
               <p className="text-gray-600">
                 Searched on {new Date(searchData.createdAt).toLocaleDateString('en-US', {

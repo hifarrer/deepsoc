@@ -1,4 +1,5 @@
 'use client'
+import Image from 'next/image'
 
 interface TikTokCardProps {
   video: {
@@ -63,11 +64,11 @@ export default function TikTokCard({ video }: TikTokCardProps) {
   }
 
   // Helper functions to get data from either structure
-  const getAuthorName = () => video['authorMeta.name'] || video.authorMeta?.name || video.authorName || 'TikTok User'
-  const getAuthorNickname = () => video['authorMeta.nickName'] || video.authorMeta?.nickName || video.authorNickname || getAuthorName()
-  const getAuthorAvatar = () => video['authorMeta.avatar'] || video.authorMeta?.avatar || video.authorAvatar
-  const getAuthorVerified = () => video['authorMeta.verified'] || video.authorMeta?.verified || video.authorVerified || false
-  const getAuthorFollowers = () => video['authorMeta.followers'] || video.authorMeta?.followers || video.authorFollowers || video.authorFans
+  const getAuthorName = () => video.authorMeta?.name || video.authorName || 'TikTok User'
+  const getAuthorNickname = () => video.authorMeta?.nickName || video.authorNickname || getAuthorName()
+  const getAuthorAvatar = () => video.authorMeta?.avatar || video.authorAvatar
+  const getAuthorVerified = () => video.authorMeta?.verified || video.authorVerified || false
+  const getAuthorFollowers = () => video.authorMeta?.followers || video.authorFollowers || video.authorFans
   const getThumbnailUrl = () => video.thumbnailUrl || video.coverUrl
   const getPostUrl = () => video.postUrl || video.url
   const getIsSponsored = () => video.isAd || video.isSponsored || false
@@ -83,10 +84,11 @@ export default function TikTokCard({ video }: TikTokCardProps) {
       {/* Video Cover */}
       {getThumbnailUrl() && (
         <div className="relative aspect-[9/16] bg-gray-100">
-          <img
-            src={getThumbnailUrl()}
+          <Image
+            src={getThumbnailUrl()!}
             alt="TikTok video cover"
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
           {getIsSponsored() && (
             <div className="absolute top-2 left-2">
@@ -110,10 +112,12 @@ export default function TikTokCard({ video }: TikTokCardProps) {
         <div className="flex items-center space-x-3 mb-3">
           <div className="flex-shrink-0">
             {getAuthorAvatar() ? (
-              <img
-                src={getAuthorAvatar()}
+              <Image
+                src={getAuthorAvatar()!}
                 alt={getAuthorName()}
-                className="w-10 h-10 rounded-full object-cover"
+                width={40}
+                height={40}
+                className="rounded-full object-cover"
               />
             ) : (
               <div className="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center text-white font-semibold">
@@ -199,7 +203,7 @@ export default function TikTokCard({ video }: TikTokCardProps) {
             )}
           </div>
           {getCreationDate() && (
-            <span className="text-xs">{formatDate(getCreationDate())}</span>
+            <span className="text-xs">{formatDate(getCreationDate() || '')}</span>
           )}
         </div>
 

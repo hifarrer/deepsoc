@@ -1,4 +1,5 @@
 'use client'
+import Image from 'next/image'
 
 interface InstagramCardProps {
   post: {
@@ -74,10 +75,11 @@ export default function InstagramCard({ post }: InstagramCardProps) {
       {/* Post Thumbnail */}
       {(post.image?.url || post.thumbnailUrl) && (
         <div className="relative aspect-square bg-gray-100">
-          <img
-            src={post.image?.url || post.thumbnailUrl}
+          <Image
+            src={(post.image?.url || post.thumbnailUrl)!}
             alt="Instagram post thumbnail"
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
           {post.isSponsored && (
             <div className="absolute top-2 left-2">
@@ -101,10 +103,12 @@ export default function InstagramCard({ post }: InstagramCardProps) {
         <div className="flex items-center space-x-3 mb-3">
           <div className="flex-shrink-0">
             {(post.authorAvatar || post.owner?.profilePicUrl || post.authorMeta?.avatar) ? (
-              <img
-                src={post.authorAvatar || post.owner?.profilePicUrl || post.authorMeta?.avatar}
+              <Image
+                src={(post.authorAvatar || post.owner?.profilePicUrl || post.authorMeta?.avatar)!}
                 alt={post.authorName || post.owner?.fullName || post.authorMeta?.name || 'Instagram User'}
-                className="w-10 h-10 rounded-full object-cover"
+                width={40}
+                height={40}
+                className="rounded-full object-cover"
               />
             ) : (
               <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold">
@@ -197,7 +201,7 @@ export default function InstagramCard({ post }: InstagramCardProps) {
             )}
           </div>
           {(post.createdAt || post.creationDate) && (
-            <span className="text-xs">{formatDate(post.createdAt || post.creationDate)}</span>
+            <span className="text-xs">{formatDate(post.createdAt || post.creationDate || '')}</span>
           )}
         </div>
 

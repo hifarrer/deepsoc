@@ -1,4 +1,5 @@
 'use client'
+import Image from 'next/image'
 
 interface TwitterCardProps {
   tweet: {
@@ -51,10 +52,12 @@ export default function TwitterCard({ tweet }: TwitterCardProps) {
       <div className="flex items-start space-x-3 mb-4">
         <div className="flex-shrink-0">
           {tweet.authorAvatar ? (
-            <img
-              src={tweet.authorAvatar}
+            <Image
+              src={tweet.authorAvatar!}
               alt={tweet.authorName || 'User avatar'}
-              className="w-12 h-12 rounded-full object-cover"
+              width={48}
+              height={48}
+              className="rounded-full object-cover"
             />
           ) : (
             <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
@@ -145,10 +148,11 @@ export default function TwitterCard({ tweet }: TwitterCardProps) {
           }`}>
             {tweet.mediaUrls.slice(0, 4).map((url, index) => (
               <div key={index} className="relative">
-                <img
+                <Image
                   src={url}
                   alt={`Tweet media ${index + 1}`}
-                  className="w-full h-48 object-cover rounded-lg"
+                  fill
+                  className="object-cover rounded-lg"
                 />
                 {tweet.mediaUrls && tweet.mediaUrls.length > 4 && index === 3 && (
                   <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">

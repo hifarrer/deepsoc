@@ -7,13 +7,15 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session?.user?.id) {
+    if (!session?.user || !(session.user as any).id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const userId = (session.user as any).id
+
     const searches = await prisma.search.findMany({
       where: {
-        userId: session.user.id
+        userId: userId
       },
       orderBy: { createdAt: 'desc' },
       take: 20, // Limit to last 20 searches
