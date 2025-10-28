@@ -1,15 +1,16 @@
 # DeepSocial - Social Media Scraper
 
-A modern web application that searches across Twitter, Reddit, and TikTok using Apify scraping services. Built with Next.js, TypeScript, Tailwind CSS, and PostgreSQL.
+A modern web application that searches across Twitter, Reddit, TikTok, Facebook, Instagram, and YouTube using Apify scraping services. Built with Next.js, TypeScript, Tailwind CSS, and PostgreSQL.
 
 ## Features
 
-- **Multi-Platform Search**: Search across Twitter, Reddit, and TikTok simultaneously
+- **Multi-Platform Search**: Search across Twitter, Reddit, TikTok, Facebook, Instagram, and YouTube simultaneously
 - **Real-time Progress Tracking**: Live progress updates with platform-specific status indicators
 - **Modern UI**: Beautiful, responsive design with gradient backgrounds and smooth animations
 - **Rich Media Display**: Shows images, avatars, and media content from all platforms
 - **Search History**: View and revisit previous searches
 - **Database Storage**: Persistent storage of search results in PostgreSQL
+- **Sync & Async Support**: Immediate results for some platforms, background processing for others
 
 ## Tech Stack
 
@@ -29,6 +30,8 @@ A modern web application that searches across Twitter, Reddit, and TikTok using 
 ### 1. Clone and Install Dependencies
 
 ```bash
+git clone https://github.com/hifarrer/deepsoc.git
+cd deepsoc
 npm install
 ```
 
@@ -39,6 +42,8 @@ Create a `.env` file in the root directory:
 ```env
 DATABASE_URL="postgresql://username:password@localhost:5432/deepsocial"
 APIFY_API_TOKEN="your_apify_api_token_here"
+NEXTAUTH_SECRET="your_nextauth_secret"
+NEXTAUTH_URL="http://localhost:3000"
 ```
 
 ### 3. Database Setup
@@ -80,7 +85,7 @@ The application will be available at `http://localhost:3000`.
 
 ## Database Schema
 
-The application uses four main models:
+The application uses several main models:
 
 - **Search**: Tracks search queries and their status
 - **TwitterResult**: Stores Twitter tweet data with metrics and media
@@ -89,20 +94,21 @@ The application uses four main models:
 
 ## Apify Integration
 
-The application integrates with three Apify actors:
+The application integrates with multiple Apify actors:
 
-- **Twitter**: `apidojo~tweet-scraper`
-- **Reddit**: `trudax~reddit-scraper-lite`  
-- **TikTok**: `clockworks~tiktok-scraper`
+- **Twitter**: `apidojo~tweet-scraper` (sync & async)
+- **Reddit**: `trudax~reddit-scraper-lite` (sync & async)
+- **TikTok, Facebook, Instagram, YouTube**: `apify~social-media-hashtag-research` (sync)
 
 ## Features in Detail
 
 ### Search Process
 1. User enters search keyword
-2. API initiates scraping on all three platforms simultaneously
-3. Frontend polls for progress updates every 3 seconds
-4. Results are fetched and stored in database when complete
-5. Results displayed in tabbed interface
+2. API initiates scraping on all platforms simultaneously
+3. Sync platforms return immediate results
+4. Async platforms show progress updates
+5. Results are fetched and stored in database when complete
+6. Results displayed in tabbed interface
 
 ### Progress Tracking
 - Real-time status updates for each platform
@@ -114,6 +120,9 @@ The application integrates with three Apify actors:
 - **Twitter**: Tweet cards with author info, engagement metrics, and media
 - **Reddit**: Post/community cards with upvote ratios and comment counts
 - **TikTok**: Video cards with creator info, view counts, and cover images
+- **Facebook**: Post cards with engagement metrics and media
+- **Instagram**: Post cards with engagement metrics and media
+- **YouTube**: Video cards with channel info, view counts, and thumbnails
 - Responsive grid layouts optimized for each platform's content type
 
 ## Development
@@ -177,5 +186,3 @@ For issues and questions:
 1. Check the GitHub issues page
 2. Review the Apify documentation for API-related questions
 3. Ensure your database connection and environment variables are properly configured
-
-
