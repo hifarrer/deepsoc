@@ -97,7 +97,7 @@ export async function GET(
               viewCount: tweet.viewCount || null,
               bookmarkCount: tweet.bookmarkCount || 0,
               authorId: tweet.author?.id || '',
-              authorName: tweet.author?.name || 'Unknown',
+              authorName: tweet.author?.name || tweet.author?.userName || 'Unknown User',
               authorUsername: tweet.author?.userName || 'unknown',
               authorVerified: tweet.author?.isVerified || false,
               authorAvatar: tweet.author?.profilePicture || null,
@@ -131,7 +131,7 @@ export async function GET(
         console.log('Reddit API response:', redditData.length, 'posts')
         
         // Store Reddit results in database
-        for (const post of redditData.slice(0, 30)) { // Limit to 30 posts
+        for (const post of redditData.slice(0, 50)) { // Limit to 30 posts
           // Skip posts without required fields
           if (!post.id && !post.name) continue
           
@@ -147,7 +147,7 @@ export async function GET(
               url: post.url || '',
               subreddit: post.subreddit || post.displayName,
               authorId: post.author?.id || null,
-              authorName: post.author?.name || null,
+              authorName: post.username || post.author?.name || null,
               authorAvatar: post.author?.avatar || null,
               score: post.score || null,
               upvoteRatio: post.upvoteRatio || null,
@@ -158,13 +158,13 @@ export async function GET(
           })
         }
         
-        results.reddit = redditData.slice(0, 30)
+        results.reddit = redditData.slice(0, 50)
       } catch (error) {
         console.error('Error fetching Reddit results:', error)
       }
     }
 
-    // Fetch Social Media results (TikTok, Facebook, Instagram)
+    // Fetch Social Media results (TikTok, Facebook, YouTube)
     if (search.tiktokRunId && !search.tiktokRunId.startsWith('sync-')) {
       // Only fetch from API if it's not a sync result
       try {
@@ -177,14 +177,13 @@ export async function GET(
         
         const socialMediaData = socialMediaDatasetResponse.data || []
         
-        // Separate results by fromSocial field
+        // Separate results by fromSocial field (Instagram now comes from separate endpoint)
         const tiktokPosts = socialMediaData.filter((item: any) => item.fromSocial === 'tiktok')
         const facebookPosts = socialMediaData.filter((item: any) => item.fromSocial === 'facebook')
-        const instagramPosts = socialMediaData.filter((item: any) => item.fromSocial === 'instagram')
         const youtubePosts = socialMediaData.filter((item: any) => item.fromSocial === 'youtube')
         
         // Store TikTok results in database
-        for (const video of tiktokPosts.slice(0, 30)) {
+        for (const video of tiktokPosts.slice(0, 50)) {
           if (!video.id) continue
           
           await prisma.tikTokResult.create({
@@ -217,7 +216,7 @@ export async function GET(
         }
 
         // Store Facebook results in database
-        for (const post of facebookPosts.slice(0, 30)) {
+        for (const post of facebookPosts.slice(0, 50)) {
           if (!post.id) continue
           
           await prisma.facebookResult.create({
@@ -239,31 +238,9 @@ export async function GET(
           })
         }
 
-        // Store Instagram results in database
-        for (const post of instagramPosts.slice(0, 30)) {
-          if (!post.id) continue
-          
-          await prisma.instagramResult.create({
-            data: {
-              searchId,
-              postId: post.id,
-              text: post.text || '',
-              url: post.postUrl || '',
-              hashtags: post.hashtags || [],
-              authorId: post.authorMeta?.id || null,
-              authorName: post.authorMeta?.name || null,
-              authorUrl: post.authorMeta?.url || null,
-              viewsCount: post.viewsCount || null,
-              likesCount: post.likesCount || null,
-              commentsCount: post.commentsCount || null,
-              shareCount: post.shareCount || null,
-              thumbnailUrl: post.thumbnailUrl || null
-            }
-          })
-        }
 
         // Store YouTube results in database
-        for (const video of youtubePosts.slice(0, 30)) {
+        for (const video of youtubePosts.slice(0, 50)) {
           if (!video.id) continue
           
           await prisma.youtubeResult.create({
@@ -287,7 +264,6 @@ export async function GET(
         
         results.tiktok = tiktokPosts
         results.facebook = facebookPosts
-        results.instagram = instagramPosts
         results.youtube = youtubePosts
       } catch (error) {
         console.error('Error fetching social media results:', error)
@@ -296,8 +272,65 @@ export async function GET(
       // For sync results, return stored results from database
       results.tiktok = search.tikTokResults || []
       results.facebook = search.facebookResults || []
-      results.instagram = search.instagramResults || []
       results.youtube = search.youtubeResults || []
+    }
+
+    // Fetch Instagram results separately
+    if (search.instagramRunId && !search.instagramRunId.startsWith('sync-')) {
+      try {
+        const instagramDatasetResponse = await axios.get(
+          `https://api.apify.com/v2/actor-runs/${search.instagramRunId}/dataset/items`,
+          {
+            headers: { 'Authorization': `Bearer ${APIFY_API_TOKEN}` }
+          }
+        )
+        
+        const instagramData = instagramDatasetResponse.data || []
+        console.log('Instagram API response:', instagramData.length, 'posts')
+        
+        // Store Instagram results in database
+        for (const post of instagramData.slice(0, 50)) {
+          if (!post.id) continue
+          
+          // Decode HTML entities in URLs to fix corrupted image URLs
+          const decodeHtmlEntities = (url: string) => {
+            if (!url) return url
+            return url
+              .replace(/&amp;/g, '&')
+              .replace(/&lt;/g, '<')
+              .replace(/&gt;/g, '>')
+              .replace(/&quot;/g, '"')
+              .replace(/&#x27;/g, "'")
+              .replace(/&#x2F;/g, '/')
+          }
+          
+          await prisma.instagramResult.create({
+            data: {
+              searchId,
+              postId: post.id,
+              text: post.caption || '',
+              url: post.url || '',
+              hashtags: post.caption ? post.caption.match(/#\w+/g) || [] : [],
+              authorId: post.owner?.id || null,
+              authorName: post.owner?.username || null,
+              authorUrl: post.owner?.username ? `https://www.instagram.com/${post.owner.username}/` : null,
+              authorAvatar: decodeHtmlEntities(post.owner?.profilePicUrl || ''),
+              viewsCount: null, // Not available in this API
+              likesCount: post.likeCount || null,
+              commentsCount: post.commentCount || null,
+              shareCount: null, // Not available in this API
+              thumbnailUrl: decodeHtmlEntities(post.image?.url || '')
+            }
+          })
+        }
+        
+        results.instagram = instagramData.slice(0, 50)
+      } catch (error) {
+        console.error('Error fetching Instagram results:', error)
+      }
+    } else if (search.instagramRunId?.startsWith('sync-')) {
+      // For sync results, return stored results from database
+      results.instagram = search.instagramResults || []
     }
 
     // Get the stored results from database

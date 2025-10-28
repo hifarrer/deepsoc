@@ -81,6 +81,7 @@ model Search {
   twitterRunId    String?
   redditRunId     String?
   tiktokRunId     String?
+  instagramRunId  String?
   
   // Results
   twitterResults  TwitterResult[]
@@ -256,6 +257,7 @@ model InstagramResult {
   authorId    String?
   authorName  String?
   authorUrl   String?
+  authorAvatar String?
   
   // Metrics
   viewsCount  Int?

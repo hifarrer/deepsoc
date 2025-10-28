@@ -67,7 +67,7 @@ export default function Home() {
     )
   }
 
-  const handleSearch = async (keyword: string) => {
+  const handleSearch = async (keyword: string, maxItems: number) => {
     setSearchState({ status: 'searching' })
 
     try {
@@ -76,7 +76,7 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ keyword }),
+        body: JSON.stringify({ keyword, maxItems }),
       })
 
       const data = await response.json()

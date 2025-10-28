@@ -64,9 +64,14 @@ export default function RedditCard({ post }: RedditCardProps) {
               </span>
             )}
             {post.authorName && (
-              <span className="text-gray-500 text-sm">
+              <a
+                href={`https://www.reddit.com/user/${post.authorName}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-500 text-sm hover:text-orange-600 transition-colors"
+              >
                 • u/{post.authorName}
-              </span>
+              </a>
             )}
           </div>
           {post.createdAt && (

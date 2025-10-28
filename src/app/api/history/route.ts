@@ -22,7 +22,10 @@ export async function GET(request: NextRequest) {
           select: {
             twitterResults: true,
             redditResults: true,
-            tikTokResults: true
+            tikTokResults: true,
+            facebookResults: true,
+            instagramResults: true,
+            youtubeResults: true
           }
         }
       }

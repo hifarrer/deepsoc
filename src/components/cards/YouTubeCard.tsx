@@ -100,9 +100,20 @@ export default function YouTubeCard({ video }: YouTubeCardProps) {
             </svg>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-gray-600 truncate">
-              {getChannelName()}
-            </p>
+            {getChannelUrl() ? (
+              <a
+                href={getChannelUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-gray-600 truncate hover:text-red-600 transition-colors"
+              >
+                {getChannelName()}
+              </a>
+            ) : (
+              <p className="text-sm text-gray-600 truncate">
+                {getChannelName()}
+              </p>
+            )}
           </div>
         </div>
 

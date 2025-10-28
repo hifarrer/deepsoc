@@ -64,16 +64,28 @@ export default function TwitterCard({ tweet }: TwitterCardProps) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2">
-            <h3 className="font-semibold text-gray-900 truncate">
+            <a 
+              href={`https://x.com/${tweet.authorUsername}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-gray-900 truncate hover:text-blue-600 transition-colors"
+            >
               {tweet.authorName || 'Unknown User'}
-            </h3>
+            </a>
             {tweet.authorVerified && (
               <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
             )}
           </div>
-          <p className="text-gray-500 text-sm">@{tweet.authorUsername}</p>
+          <a 
+            href={`https://x.com/${tweet.authorUsername}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-500 text-sm hover:text-blue-600 transition-colors"
+          >
+            @{tweet.authorUsername}
+          </a>
           {tweet.authorFollowers && (
             <p className="text-gray-400 text-xs">
               {formatNumber(tweet.authorFollowers)} followers
