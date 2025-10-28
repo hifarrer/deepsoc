@@ -284,6 +284,87 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Store Facebook results in database if we have sync data
+    for (const post of facebookPosts.slice(0, 30)) {
+      try {
+        if (!post.id) continue
+        
+        await prisma.facebookResult.create({
+          data: {
+            searchId: search.id,
+            postId: post.id,
+            text: post.text || '',
+            url: post.postUrl || '',
+            hashtags: post.hashtags || [],
+            authorId: post.authorMeta?.id || null,
+            authorName: post.authorMeta?.name || null,
+            authorUrl: post.authorMeta?.url || null,
+            viewsCount: post.viewsCount || null,
+            likesCount: post.likesCount || null,
+            commentsCount: post.commentsCount || null,
+            shareCount: post.shareCount || null,
+            thumbnailUrl: post.thumbnailUrl || null
+          }
+        })
+      } catch (error) {
+        console.error('Error storing Facebook result:', error)
+      }
+    }
+
+    // Store Instagram results in database if we have sync data
+    for (const post of instagramPosts.slice(0, 30)) {
+      try {
+        if (!post.id) continue
+        
+        await prisma.instagramResult.create({
+          data: {
+            searchId: search.id,
+            postId: post.id,
+            text: post.text || '',
+            url: post.postUrl || '',
+            hashtags: post.hashtags || [],
+            authorId: post.authorMeta?.id || null,
+            authorName: post.authorMeta?.name || null,
+            authorUrl: post.authorMeta?.url || null,
+            viewsCount: post.viewsCount || null,
+            likesCount: post.likesCount || null,
+            commentsCount: post.commentsCount || null,
+            shareCount: post.shareCount || null,
+            thumbnailUrl: post.thumbnailUrl || null
+          }
+        })
+      } catch (error) {
+        console.error('Error storing Instagram result:', error)
+      }
+    }
+
+    // Store YouTube results in database if we have sync data
+    for (const video of youtubePosts.slice(0, 30)) {
+      try {
+        if (!video.id) continue
+        
+        await prisma.youtubeResult.create({
+          data: {
+            searchId: search.id,
+            videoId: video.id,
+            title: video.text || '',
+            text: video.text || '',
+            url: video.postUrl || '',
+            hashtags: video.hashtags || [],
+            authorId: video.authorMeta?.id || null,
+            authorName: video.authorMeta?.name || null,
+            authorUrl: video.authorMeta?.url || null,
+            viewsCount: video.viewsCount || null,
+            likesCount: video.likesCount || null,
+            commentsCount: video.commentsCount || null,
+            thumbnailUrl: video.thumbnailUrl || null
+          }
+        })
+      } catch (error) {
+        console.error('Error storing YouTube result:', error)
+      }
+    }
+
     // Update search with run IDs
     await prisma.search.update({
       where: { id: search.id },

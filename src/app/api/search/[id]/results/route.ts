@@ -24,7 +24,10 @@ export async function GET(
       include: {
         twitterResults: true,
         redditResults: true,
-        tikTokResults: true
+        tikTokResults: true,
+        facebookResults: true,
+        instagramResults: true,
+        youtubeResults: true
       }
     })
 
@@ -33,7 +36,8 @@ export async function GET(
     }
 
     // If results already exist, return them
-    if (search.twitterResults.length > 0 || search.redditResults.length > 0 || search.tikTokResults.length > 0) {
+    if (search.twitterResults.length > 0 || search.redditResults.length > 0 || search.tikTokResults.length > 0 || 
+        search.facebookResults.length > 0 || search.instagramResults.length > 0 || search.youtubeResults.length > 0) {
       return NextResponse.json({
         searchId,
         keyword: search.keyword,
@@ -41,9 +45,9 @@ export async function GET(
           twitter: search.twitterResults,
           reddit: search.redditResults,
           tiktok: search.tikTokResults,
-          facebook: [],
-          instagram: [],
-          youtube: []
+          facebook: search.facebookResults,
+          instagram: search.instagramResults,
+          youtube: search.youtubeResults
         }
       })
     }
@@ -211,6 +215,75 @@ export async function GET(
             }
           })
         }
+
+        // Store Facebook results in database
+        for (const post of facebookPosts.slice(0, 30)) {
+          if (!post.id) continue
+          
+          await prisma.facebookResult.create({
+            data: {
+              searchId,
+              postId: post.id,
+              text: post.text || '',
+              url: post.postUrl || '',
+              hashtags: post.hashtags || [],
+              authorId: post.authorMeta?.id || null,
+              authorName: post.authorMeta?.name || null,
+              authorUrl: post.authorMeta?.url || null,
+              viewsCount: post.viewsCount || null,
+              likesCount: post.likesCount || null,
+              commentsCount: post.commentsCount || null,
+              shareCount: post.shareCount || null,
+              thumbnailUrl: post.thumbnailUrl || null
+            }
+          })
+        }
+
+        // Store Instagram results in database
+        for (const post of instagramPosts.slice(0, 30)) {
+          if (!post.id) continue
+          
+          await prisma.instagramResult.create({
+            data: {
+              searchId,
+              postId: post.id,
+              text: post.text || '',
+              url: post.postUrl || '',
+              hashtags: post.hashtags || [],
+              authorId: post.authorMeta?.id || null,
+              authorName: post.authorMeta?.name || null,
+              authorUrl: post.authorMeta?.url || null,
+              viewsCount: post.viewsCount || null,
+              likesCount: post.likesCount || null,
+              commentsCount: post.commentsCount || null,
+              shareCount: post.shareCount || null,
+              thumbnailUrl: post.thumbnailUrl || null
+            }
+          })
+        }
+
+        // Store YouTube results in database
+        for (const video of youtubePosts.slice(0, 30)) {
+          if (!video.id) continue
+          
+          await prisma.youtubeResult.create({
+            data: {
+              searchId,
+              videoId: video.id,
+              title: video.text || '',
+              text: video.text || '',
+              url: video.postUrl || '',
+              hashtags: video.hashtags || [],
+              authorId: video.authorMeta?.id || null,
+              authorName: video.authorMeta?.name || null,
+              authorUrl: video.authorMeta?.url || null,
+              viewsCount: video.viewsCount || null,
+              likesCount: video.likesCount || null,
+              commentsCount: video.commentsCount || null,
+              thumbnailUrl: video.thumbnailUrl || null
+            }
+          })
+        }
         
         results.tiktok = tiktokPosts
         results.facebook = facebookPosts
@@ -220,12 +293,11 @@ export async function GET(
         console.error('Error fetching social media results:', error)
       }
     } else if (search.tiktokRunId?.startsWith('sync-')) {
-      // For sync results, we need to fetch from last run or return empty
-      // Facebook, Instagram, and YouTube results are not stored in DB yet, so return TikTok only for now
+      // For sync results, return stored results from database
       results.tiktok = search.tikTokResults || []
-      results.facebook = []
-      results.instagram = []
-      results.youtube = []
+      results.facebook = search.facebookResults || []
+      results.instagram = search.instagramResults || []
+      results.youtube = search.youtubeResults || []
     }
 
     // Get the stored results from database
@@ -234,14 +306,20 @@ export async function GET(
       include: {
         twitterResults: true,
         redditResults: true,
-        tikTokResults: true
+        tikTokResults: true,
+        facebookResults: true,
+        instagramResults: true,
+        youtubeResults: true
       }
     })
 
     console.log('Stored results from database:', {
       twitterCount: storedResults?.twitterResults?.length || 0,
       redditCount: storedResults?.redditResults?.length || 0,
-      tiktokCount: storedResults?.tikTokResults?.length || 0
+      tiktokCount: storedResults?.tikTokResults?.length || 0,
+      facebookCount: storedResults?.facebookResults?.length || 0,
+      instagramCount: storedResults?.instagramResults?.length || 0,
+      youtubeCount: storedResults?.youtubeResults?.length || 0
     })
 
     console.log('Results from API calls:', {
@@ -260,9 +338,9 @@ export async function GET(
         twitter: storedResults?.twitterResults || results.twitter,
         reddit: storedResults?.redditResults || results.reddit,
         tiktok: results.tiktok || storedResults?.tikTokResults || [],
-        facebook: results.facebook || [],
-        instagram: results.instagram || [],
-        youtube: results.youtube || []
+        facebook: results.facebook || storedResults?.facebookResults || [],
+        instagram: results.instagram || storedResults?.instagramResults || [],
+        youtube: results.youtube || storedResults?.youtubeResults || []
       }
     })
 

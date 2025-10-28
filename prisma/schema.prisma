@@ -86,6 +86,9 @@ model Search {
   twitterResults  TwitterResult[]
   redditResults   RedditResult[]
   tikTokResults   TikTokResult[]
+  facebookResults FacebookResult[]
+  instagramResults InstagramResult[]
+  youtubeResults  YouTubeResult[]
   
   @@map("searches")
 }
@@ -205,4 +208,97 @@ model TikTokResult {
   createdAt      DateTime @default(now())
   
   @@map("tiktok_results")
+}
+
+model FacebookResult {
+  id          String   @id @default(cuid())
+  searchId    String
+  search      Search   @relation(fields: [searchId], references: [id], onDelete: Cascade)
+  
+  // Post data
+  postId      String
+  text        String?
+  url         String
+  hashtags    String[] // Array of hashtags
+  
+  // Author data
+  authorId    String?
+  authorName  String?
+  authorUrl   String?
+  
+  // Metrics
+  viewsCount  Int?
+  likesCount  Int?
+  commentsCount Int?
+  shareCount  Int?
+  
+  // Media
+  thumbnailUrl String?
+  
+  // Metadata
+  createdAt   DateTime @default(now())
+  
+  @@map("facebook_results")
+}
+
+model InstagramResult {
+  id          String   @id @default(cuid())
+  searchId    String
+  search      Search   @relation(fields: [searchId], references: [id], onDelete: Cascade)
+  
+  // Post data
+  postId      String
+  text        String?
+  url         String
+  hashtags    String[] // Array of hashtags
+  
+  // Author data
+  authorId    String?
+  authorName  String?
+  authorUrl   String?
+  
+  // Metrics
+  viewsCount  Int?
+  likesCount  Int?
+  commentsCount Int?
+  shareCount  Int?
+  
+  // Media
+  thumbnailUrl String?
+  
+  // Metadata
+  createdAt   DateTime @default(now())
+  
+  @@map("instagram_results")
+}
+
+model YouTubeResult {
+  id          String   @id @default(cuid())
+  searchId    String
+  search      Search   @relation(fields: [searchId], references: [id], onDelete: Cascade)
+  
+  // Video data
+  videoId     String
+  title       String?
+  text        String?
+  url         String
+  hashtags    String[] // Array of hashtags
+  
+  // Author data
+  authorId    String?
+  authorName  String?
+  authorUrl   String?
+  
+  // Metrics
+  viewsCount  Int?
+  likesCount  Int?
+  commentsCount Int?
+  
+  // Media
+  thumbnailUrl String?
+  
+  // Metadata
+  createdAt   DateTime @default(now())
+  
+  @@map("youtube_results")
 }
