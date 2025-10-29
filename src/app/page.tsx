@@ -389,7 +389,7 @@ export default function Home() {
                 <span className="text-xl font-bold text-white">DeepSocial</span>
               </div>
               <div className="text-gray-400 text-center md:text-right">
-                <p>&copy; 2024 DeepSocial. All rights reserved.</p>
+                <p>&copy; 2025 DeepSocial. All rights reserved.</p>
                 <p className="mt-1">Powered by advanced AI and web scraping technology</p>
               </div>
             </div>
@@ -722,7 +722,7 @@ export default function Home() {
       <footer className="bg-white/80 backdrop-blur-sm border-t border-gray-200 mt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center text-gray-600">
-            <p>&copy; 2024 DeepSocial. Powered by Apify scraping technology.</p>
+            <p>&copy; 2025 DeepSocial. Powered by Apify scraping technology.</p>
           </div>
         </div>
       </footer>
