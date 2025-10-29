@@ -246,7 +246,7 @@ export async function POST(request: NextRequest) {
         `https://api.apify.com/v2/acts/apify~social-media-hashtag-research/run-sync-get-dataset-items?token=${APIFY_API_TOKEN}`,
         {
           hashtags: [keyword],
-          socials: ["facebook", "tiktok", "youtube"]
+          socials: ["tiktok", "youtube"]
         },
         {
           headers: {
@@ -264,7 +264,7 @@ export async function POST(request: NextRequest) {
           'https://api.apify.com/v2/acts/apify~social-media-hashtag-research/runs',
           {
             hashtags: [keyword],
-            socials: ["facebook", "tiktok", "youtube"]
+            socials: ["tiktok", "youtube"]
           },
           {
             headers: {
@@ -303,12 +303,10 @@ export async function POST(request: NextRequest) {
 
     // Separate results by fromSocial field (Instagram now comes from separate endpoint)
     const tiktokPosts = socialMediaData.filter((item: any) => item.fromSocial === 'tiktok')
-    const facebookPosts = socialMediaData.filter((item: any) => item.fromSocial === 'facebook')
     const youtubePosts = socialMediaData.filter((item: any) => item.fromSocial === 'youtube')
     
     console.log('Separated results:')
     console.log('- TikTok posts:', tiktokPosts.length)
-    console.log('- Facebook posts:', facebookPosts.length)
     console.log('- Instagram posts:', instagramData.length)
     console.log('- YouTube posts:', youtubePosts.length)
 
@@ -420,33 +418,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Store Facebook results in database if we have sync data
-    for (const post of facebookPosts.slice(0, validMaxItems)) {
-      try {
-        if (!post.id) continue
-        
-        await prisma.facebookResult.create({
-          data: {
-            searchId: search.id,
-            postId: post.id,
-            text: post.text || '',
-            url: post.postUrl || '',
-            hashtags: post.hashtags || [],
-            authorId: post.authorMeta?.id || null,
-            authorName: post.authorMeta?.name || null,
-            authorUrl: post.authorMeta?.url || null,
-            viewsCount: post.viewsCount || null,
-            likesCount: post.likesCount || null,
-            commentsCount: post.commentsCount || null,
-            shareCount: post.shareCount || null,
-            thumbnailUrl: post.thumbnailUrl || null
-          }
-        })
-      } catch (error) {
-        console.error('Error storing Facebook result:', error)
-      }
-    }
-
     // Store Instagram results in database if we have sync data (new format from apidojo/instagram-hashtag-scraper)
     for (const post of instagramData.slice(0, validMaxItems)) {
       try {
@@ -534,13 +505,11 @@ export async function POST(request: NextRequest) {
       instagramRunId: instagramRunId, // Still return for frontend use
       socialMediaData: socialMediaData.length > 0 ? {
         tiktok: tiktokPosts,
-        facebook: facebookPosts,
         youtube: youtubePosts
       } : undefined,
       // Include sync data in response for immediate display
       syncResults: socialMediaData.length > 0 ? {
         tiktok: tiktokPosts,
-        facebook: facebookPosts,
         instagram: instagramData,
         youtube: youtubePosts
       } : undefined,

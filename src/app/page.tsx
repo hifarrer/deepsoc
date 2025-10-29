@@ -16,7 +16,6 @@ interface SearchState {
     reddit?: any[]
     twitter?: any[]
     tiktok?: any[]
-    facebook?: any[]
     instagram?: any[]
     youtube?: any[]
   }
@@ -96,7 +95,6 @@ export default function Home() {
               reddit: data.redditData || [], // Use sync Reddit data if available
               twitter: data.twitterData || [], // Use sync Twitter data if available
               tiktok: data.syncResults?.tiktok || [],
-              facebook: data.syncResults?.facebook || [],
               instagram: data.syncResults?.instagram || [],
               youtube: data.syncResults?.youtube || []
             }
@@ -135,9 +133,8 @@ export default function Home() {
           ...prev,
           status: 'results',
           results: {
-            // Keep existing sync results (TikTok, Facebook, Instagram, YouTube) - prioritize existing data
+            // Keep existing sync results (TikTok, Instagram, YouTube) - prioritize existing data
             tiktok: (prev.results?.tiktok?.length || 0) > 0 ? prev.results?.tiktok : (data.results.tiktok || []),
-            facebook: (prev.results?.facebook?.length || 0) > 0 ? prev.results?.facebook : (data.results.facebook || []),
             instagram: (prev.results?.instagram?.length || 0) > 0 ? prev.results?.instagram : (data.results.instagram || []),
             youtube: (prev.results?.youtube?.length || 0) > 0 ? prev.results?.youtube : (data.results.youtube || []),
             // Add async results (Reddit, Twitter)
