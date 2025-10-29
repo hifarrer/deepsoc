@@ -69,7 +69,7 @@ export async function GET(
         ? Promise.resolve({ data: { data: { status: 'SUCCEEDED' } } })
         : search.truthSocialRunId ? axios.get(`https://api.apify.com/v2/actor-runs/${search.truthSocialRunId}`, {
             headers: { 'Authorization': `Bearer ${APIFY_API_TOKEN}` }
-          }).catch(() => ({ data: { data: { status: 'FAILED' } } })) : Promise.resolve({ data: { data: { status: 'NOT_STARTED' } } }))
+          }).catch(() => ({ data: { data: { status: 'FAILED' } } })) : Promise.resolve({ data: { data: { status: 'NOT_STARTED' } } })
     ])
 
     const [tiktokStatus, twitterStatus, redditStatus, instagramStatus, youtubeStatus, truthSocialStatus] = statusChecks.map(
