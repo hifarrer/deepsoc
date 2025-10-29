@@ -469,7 +469,7 @@ export async function POST(request: NextRequest) {
               try {
                 if (!video.id) continue
                 
-                await (prisma as any).youtubeResult.create({
+                await prisma.youtubeResult.create({
                   data: {
                     searchId: search.id,
                     videoId: video.id,
