@@ -496,7 +496,8 @@ export async function POST(request: NextRequest) {
         `https://api.apify.com/v2/acts/muhammetakkurtt~truthsocial-hashtag-scraper/run-sync-get-dataset-items?token=${APIFY_API_TOKEN}`,
         {
           cleanContent: true,
-          hashtag: keyword
+          hashtag: keyword,
+          maxPosts: validMaxItems
         },
         {
           headers: {
