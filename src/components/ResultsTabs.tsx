@@ -103,6 +103,66 @@ export default function ResultsTabs({ results, keyword }: ResultsTabsProps) {
     return colorMap[color as keyof typeof colorMap] || colorMap.orange
   }
 
+  // Export functions
+  const exportToCSV = () => {
+    const currentResults = results[activeTab] || []
+    if (!currentResults || currentResults.length === 0) return
+
+    // Get headers based on the first item
+    const headers = Object.keys(currentResults[0] || {})
+    
+    // Create CSV content
+    const csvContent = [
+      headers.join(','),
+      ...currentResults.map(item => 
+        headers.map(header => {
+          const value = item[header]
+          // Escape commas and quotes in CSV
+          if (typeof value === 'string') {
+            return `"${value.replace(/"/g, '""')}"`
+          }
+          return value || ''
+        }).join(',')
+      )
+    ].join('\n')
+
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `${activeTab}_results_${keyword.replace(/[^a-z0-9]/gi, '_')}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  const exportToJSON = () => {
+    const currentResults = results[activeTab] || []
+    if (!currentResults || currentResults.length === 0) return
+
+    // Create JSON content
+    const jsonContent = JSON.stringify({
+      platform: activeTab,
+      keyword: keyword,
+      totalResults: currentResults.length,
+      exportDate: new Date().toISOString(),
+      results: currentResults
+    }, null, 2)
+
+    // Create and download file
+    const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `${activeTab}_results_${keyword.replace(/[^a-z0-9]/gi, '_')}.json`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   const renderResults = () => {
     const currentResults = results[activeTab] || []
     
@@ -157,10 +217,45 @@ export default function ResultsTabs({ results, keyword }: ResultsTabsProps) {
               Found {totalResults} results across all platforms
             </p>
           </div>
-          <div className="text-right">
-            <div className="text-sm text-gray-500 mb-1">Total Results</div>
-            <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {totalResults}
+          <div className="flex items-center space-x-4">
+            {/* Export Buttons */}
+            <div className="flex space-x-2">
+              <button
+                onClick={exportToCSV}
+                disabled={!results[activeTab] || results[activeTab]?.length === 0}
+                className="flex items-center space-x-2 px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200 text-sm font-medium"
+                title="Export to CSV"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
+                  <polyline points="14,2 14,8 20,8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                  <polyline points="10,9 9,9 8,9"/>
+                </svg>
+                <span>CSV</span>
+              </button>
+              <button
+                onClick={exportToJSON}
+                disabled={!results[activeTab] || results[activeTab]?.length === 0}
+                className="flex items-center space-x-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200 text-sm font-medium"
+                title="Export to JSON"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
+                  <polyline points="14,2 14,8 20,8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                  <polyline points="10,9 9,9 8,9"/>
+                </svg>
+                <span>JSON</span>
+              </button>
+            </div>
+            <div className="text-right">
+              <div className="text-sm text-gray-500 mb-1">Total Results</div>
+              <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                {totalResults}
+              </div>
             </div>
           </div>
         </div>
