@@ -27,7 +27,8 @@ export async function GET(
         tikTokResults: true,
         facebookResults: true,
         instagramResults: true,
-        youtubeResults: true
+        youtubeResults: true,
+        truthSocialResults: true
       }
     })
 
@@ -37,7 +38,8 @@ export async function GET(
 
     // If results already exist, return them
     if (search.twitterResults.length > 0 || search.redditResults.length > 0 || search.tikTokResults.length > 0 || 
-        search.facebookResults.length > 0 || search.instagramResults.length > 0 || search.youtubeResults.length > 0) {
+        search.facebookResults.length > 0 || search.instagramResults.length > 0 || search.youtubeResults.length > 0 ||
+        search.truthSocialResults.length > 0) {
       return NextResponse.json({
         searchId,
         keyword: search.keyword,
@@ -47,7 +49,8 @@ export async function GET(
           tiktok: search.tikTokResults,
           facebook: search.facebookResults,
           instagram: search.instagramResults,
-          youtube: search.youtubeResults
+          youtube: search.youtubeResults,
+          truthSocial: search.truthSocialResults
         }
       })
     }
@@ -58,7 +61,8 @@ export async function GET(
       tiktok: [],
       facebook: [],
       instagram: [],
-      youtube: []
+      youtube: [],
+      truthSocial: []
     }
 
     // Fetch Twitter results
@@ -342,7 +346,8 @@ export async function GET(
         tikTokResults: true,
         facebookResults: true,
         instagramResults: true,
-        youtubeResults: true
+        youtubeResults: true,
+        truthSocialResults: true
       }
     })
 
@@ -373,7 +378,8 @@ export async function GET(
         tiktok: results.tiktok || storedResults?.tikTokResults || [],
         facebook: results.facebook || storedResults?.facebookResults || [],
         instagram: results.instagram || storedResults?.instagramResults || [],
-        youtube: results.youtube || storedResults?.youtubeResults || []
+        youtube: results.youtube || storedResults?.youtubeResults || [],
+        truthSocial: results.truthSocial || storedResults?.truthSocialResults || []
       }
     })
 

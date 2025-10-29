@@ -6,6 +6,7 @@ import RedditCard from '@/components/cards/RedditCard'
 import TikTokCard from '@/components/cards/TikTokCard'
 import InstagramCard from '@/components/cards/InstagramCard'
 import YouTubeCard from '@/components/cards/YouTubeCard'
+import TruthSocialCard from '@/components/cards/TruthSocialCard'
 
 interface ResultsTabsProps {
   results: {
@@ -14,12 +15,13 @@ interface ResultsTabsProps {
     twitter?: any[]
     reddit?: any[]
     youtube?: any[]
+    truthSocial?: any[]
   }
   keyword: string
 }
 
 export default function ResultsTabs({ results, keyword }: ResultsTabsProps) {
-  const [activeTab, setActiveTab] = useState<'reddit' | 'twitter' | 'tiktok' | 'instagram' | 'youtube'>('tiktok')
+  const [activeTab, setActiveTab] = useState<'reddit' | 'twitter' | 'tiktok' | 'instagram' | 'youtube' | 'truthSocial'>('tiktok')
 
   // Helper function to safely get array length
   const getArrayLength = (arr: any[] | undefined) => arr?.length || 0
@@ -79,6 +81,17 @@ export default function ResultsTabs({ results, keyword }: ResultsTabsProps) {
         </svg>
       ),
       color: 'orange'
+    },
+    {
+      id: 'truthSocial' as const,
+      name: 'Truth Social',
+      count: getArrayLength(results.truthSocial),
+      icon: (
+        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+      ),
+      color: 'green'
     }
   ]
 
@@ -98,7 +111,10 @@ export default function ResultsTabs({ results, keyword }: ResultsTabsProps) {
         : 'text-purple-600 hover:bg-purple-50',
       red: isActive 
         ? 'bg-red-500 text-white' 
-        : 'text-red-600 hover:bg-red-50'
+        : 'text-red-600 hover:bg-red-50',
+      green: isActive 
+        ? 'bg-green-500 text-white' 
+        : 'text-green-600 hover:bg-green-50'
     }
     return colorMap[color as keyof typeof colorMap] || colorMap.orange
   }
@@ -194,6 +210,8 @@ export default function ResultsTabs({ results, keyword }: ResultsTabsProps) {
               return <InstagramCard key={item.id || index} post={item} />
             case 'youtube':
               return <YouTubeCard key={item.id || index} video={item} />
+            case 'truthSocial':
+              return <TruthSocialCard key={item.id || index} post={item} />
             default:
               return null
           }
@@ -202,7 +220,7 @@ export default function ResultsTabs({ results, keyword }: ResultsTabsProps) {
     )
   }
 
-  const totalResults = getArrayLength(results.reddit) + getArrayLength(results.twitter) + getArrayLength(results.tiktok) + getArrayLength(results.instagram) + getArrayLength(results.youtube)
+  const totalResults = getArrayLength(results.reddit) + getArrayLength(results.twitter) + getArrayLength(results.tiktok) + getArrayLength(results.instagram) + getArrayLength(results.youtube) + getArrayLength(results.truthSocial)
 
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden">

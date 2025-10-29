@@ -82,6 +82,7 @@ model Search {
   redditRunId     String?
   tiktokRunId     String?
   instagramRunId  String?
+  truthSocialRunId String?
   
   // Results
   twitterResults  TwitterResult[]
@@ -90,6 +91,7 @@ model Search {
   facebookResults FacebookResult[]
   instagramResults InstagramResult[]
   youtubeResults  YouTubeResult[]
+  truthSocialResults TruthSocialResult[]
   
   @@map("searches")
 }
@@ -303,4 +305,43 @@ model YouTubeResult {
   createdAt   DateTime @default(now())
   
   @@map("youtube_results")
+}
+
+model TruthSocialResult {
+  id          String   @id @default(cuid())
+  searchId    String
+  search      Search   @relation(fields: [searchId], references: [id], onDelete: Cascade)
+  
+  // Post data
+  postId      String
+  content     String?
+  url         String
+  uri         String?
+  language    String?
+  visibility  String?
+  
+  // Author data
+  authorId    String?
+  authorName  String?
+  authorUsername String?
+  authorAvatar String?
+  
+  // Metrics
+  repliesCount    Int @default(0)
+  reblogsCount    Int @default(0)
+  favouritesCount Int @default(0)
+  
+  // Media
+  cardTitle       String?
+  cardDescription String?
+  cardImage       String?
+  cardUrl         String?
+  cardType        String?
+  
+  // Metadata
+  createdAt       String?  // Truth Social's created_at format
+  editedAt        String?  // Truth Social's edited_at format
+  scrapedAt       DateTime @default(now())
+  
+  @@map("truthsocial_results")
 }

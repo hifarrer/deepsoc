@@ -18,6 +18,7 @@ interface SearchState {
     tiktok?: any[]
     instagram?: any[]
     youtube?: any[]
+    truthSocial?: any[]
   }
   error?: string
 }
@@ -96,7 +97,8 @@ export default function Home() {
               twitter: data.twitterData || [], // Use sync Twitter data if available
               tiktok: data.syncResults?.tiktok || [],
               instagram: data.syncResults?.instagram || [],
-              youtube: data.syncResults?.youtube || []
+              youtube: data.syncResults?.youtube || [],
+              truthSocial: data.syncResults?.truthSocial || data.truthSocialData || []
             }
           })
         } else {
@@ -137,6 +139,7 @@ export default function Home() {
             tiktok: (prev.results?.tiktok?.length || 0) > 0 ? prev.results?.tiktok : (data.results.tiktok || []),
             instagram: (prev.results?.instagram?.length || 0) > 0 ? prev.results?.instagram : (data.results.instagram || []),
             youtube: (prev.results?.youtube?.length || 0) > 0 ? prev.results?.youtube : (data.results.youtube || []),
+            truthSocial: (prev.results?.truthSocial?.length || 0) > 0 ? prev.results?.truthSocial : (data.results.truthSocial || []),
             // Add async results (Reddit, Twitter)
             reddit: data.results.reddit || [],
             twitter: data.results.twitter || []

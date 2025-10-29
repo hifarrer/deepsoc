@@ -485,6 +485,75 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Truth Social API call
+    let truthSocialRunId
+    let truthSocialData = []
+    
+    console.log('Starting Truth Social hashtag research for keyword:', keyword)
+    
+    try {
+      const truthSocialResponse = await axios.post(
+        `https://api.apify.com/v2/acts/muhammetakkurtt~truthsocial-hashtag-scraper/run-sync-get-dataset-items?token=${APIFY_API_TOKEN}`,
+        {
+          cleanContent: true,
+          hashtag: keyword
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+      
+      console.log('Truth Social API call successful, response type:', typeof truthSocialResponse.data)
+      
+      if (truthSocialResponse.data && Array.isArray(truthSocialResponse.data)) {
+        truthSocialData = truthSocialResponse.data
+        truthSocialRunId = 'sync-truthsocial-' + search.id
+        console.log('Truth Social sync response detected, data length:', truthSocialData.length)
+      } else {
+        console.log('Truth Social response format:', truthSocialResponse.data)
+      }
+    } catch (error: any) {
+      console.error('Truth Social API Error:', error.response?.data || error.message)
+      // Continue without Truth Social data
+    }
+
+    // Store Truth Social results in database if we have sync data
+    for (const post of truthSocialData.slice(0, validMaxItems)) {
+      try {
+        if (!post.id) continue
+        
+        await prisma.truthSocialResult.create({
+          data: {
+            searchId: search.id,
+            postId: post.id,
+            content: post.content || '',
+            url: post.url || '',
+            uri: post.uri || null,
+            language: post.language || null,
+            visibility: post.visibility || null,
+            authorId: null, // Not available in the API response
+            authorName: null, // Not available in the API response
+            authorUsername: null, // Not available in the API response
+            authorAvatar: null, // Not available in the API response
+            repliesCount: post.replies_count || 0,
+            reblogsCount: post.reblogs_count || 0,
+            favouritesCount: post.favourites_count || 0,
+            cardTitle: post.card?.title || null,
+            cardDescription: post.card?.description || null,
+            cardImage: post.card?.image || null,
+            cardUrl: post.card?.url || null,
+            cardType: post.card?.type || null,
+            createdAt: post.created_at || null,
+            editedAt: post.edited_at || null
+          }
+        })
+      } catch (error) {
+        console.error('Error storing Truth Social result:', error)
+      }
+    }
+
     // Update search with run IDs
     await prisma.search.update({
       where: { id: search.id },
@@ -493,7 +562,8 @@ export async function POST(request: NextRequest) {
         redditRunId: redditRunId,
         tiktokRunId: socialMediaRunId,
         instagramRunId: instagramRunId,
-        status: (socialMediaData.length > 0 || instagramData.length > 0) ? 'completed' : 'running'
+        truthSocialRunId: truthSocialRunId,
+        status: (socialMediaData.length > 0 || instagramData.length > 0 || truthSocialData.length > 0) ? 'completed' : 'running'
       }
     })
 
@@ -503,6 +573,7 @@ export async function POST(request: NextRequest) {
       redditRunId: redditRunId,
       socialMediaRunId: socialMediaRunId,
       instagramRunId: instagramRunId, // Still return for frontend use
+      truthSocialRunId: truthSocialRunId,
       socialMediaData: socialMediaData.length > 0 ? {
         tiktok: tiktokPosts,
         youtube: youtubePosts
@@ -511,12 +582,14 @@ export async function POST(request: NextRequest) {
       syncResults: socialMediaData.length > 0 ? {
         tiktok: tiktokPosts,
         instagram: instagramData,
-        youtube: youtubePosts
+        youtube: youtubePosts,
+        truthSocial: truthSocialData
       } : undefined,
       // Include Reddit and Twitter sync data
       redditData: redditData.length > 0 ? redditData : undefined,
       twitterData: twitterData.length > 0 ? twitterData : undefined,
-      instagramData: instagramData.length > 0 ? instagramData : undefined
+      instagramData: instagramData.length > 0 ? instagramData : undefined,
+      truthSocialData: truthSocialData.length > 0 ? truthSocialData : undefined
     })
 
   } catch (error) {
