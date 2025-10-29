@@ -20,6 +20,12 @@ export default function TruthSocialCard({ post }: TruthSocialCardProps) {
   const getCreatedAt = () => post.createdAt || post.created_at || ''
   const getLanguage = () => post.language || ''
   const getVisibility = () => post.visibility || ''
+  
+  // Author information
+  const getAuthorName = () => post.authorName || post.account?.display_name || ''
+  const getAuthorUsername = () => post.authorUsername || post.account?.username || ''
+  const getAuthorAvatar = () => post.authorAvatar || post.account?.avatar || ''
+  const getAuthorHeader = () => post.authorHeader || post.account?.header || ''
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`
@@ -43,8 +49,23 @@ export default function TruthSocialCard({ post }: TruthSocialCardProps) {
 
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-      {/* Card Image/Media */}
-      {getCardImage() && (
+      {/* Author Header Image */}
+      {getAuthorHeader() && (
+        <div className="relative aspect-video bg-gray-100">
+          <Image
+            src={getAuthorHeader()!}
+            alt={`${getAuthorName() || getAuthorUsername() || 'Truth Social'} header`}
+            fill
+            className="object-cover"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none'
+            }}
+          />
+        </div>
+      )}
+      
+      {/* Card Image/Media (only if no header image) */}
+      {!getAuthorHeader() && getCardImage() && (
         <div className="relative aspect-video bg-gray-100">
           <Image
             src={getCardImage()!}
@@ -60,6 +81,38 @@ export default function TruthSocialCard({ post }: TruthSocialCardProps) {
 
       {/* Content */}
       <div className="p-4">
+        {/* Author Information */}
+        {(getAuthorName() || getAuthorUsername()) && (
+          <div className="flex items-center space-x-3 mb-4">
+            {getAuthorAvatar() && (
+              <div className="flex-shrink-0">
+                <Image
+                  src={getAuthorAvatar()!}
+                  alt={getAuthorName() || getAuthorUsername() || 'Author'}
+                  width={40}
+                  height={40}
+                  className="rounded-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none'
+                  }}
+                />
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              {getAuthorName() && (
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {getAuthorName()}
+                </p>
+              )}
+              {getAuthorUsername() && (
+                <p className="text-xs text-gray-500 truncate">
+                  @{getAuthorUsername()}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Post Content */}
         <div className="mb-4">
           <p className="text-gray-900 text-sm leading-relaxed">

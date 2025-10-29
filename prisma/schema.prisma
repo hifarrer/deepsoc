@@ -325,6 +325,7 @@ model TruthSocialResult {
   authorName  String?
   authorUsername String?
   authorAvatar String?
+  authorHeader String?
   
   // Metrics
   repliesCount    Int @default(0)
