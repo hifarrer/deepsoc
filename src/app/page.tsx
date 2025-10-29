@@ -53,6 +53,12 @@ export default function Home() {
             </div>
             <div className="space-x-4">
               <button
+                onClick={() => router.push('/pricing')}
+                className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors"
+              >
+                Pricing
+              </button>
+              <button
                 onClick={() => router.push('/auth/login')}
                 className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors"
               >
@@ -540,6 +546,12 @@ export default function Home() {
                 Social Media Intelligence Platform
               </p>
               <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => router.push('/pricing')}
+                  className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors duration-200 text-sm font-medium"
+                >
+                  Pricing
+                </button>
                 <button
                   onClick={() => setShowHistory(true)}
                   className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200 text-sm font-medium"
