@@ -32,31 +32,52 @@ export async function GET(
       // Handle sync results for TikTok (social media hashtag research)
       search.tiktokRunId?.startsWith('sync-')
         ? Promise.resolve({ data: { data: { status: 'SUCCEEDED' } } })
-        : axios.get(`https://api.apify.com/v2/actor-runs/${search.tiktokRunId}`, {
+        : search.tiktokRunId ? axios.get(`https://api.apify.com/v2/actor-runs/${search.tiktokRunId}`, {
             headers: { 'Authorization': `Bearer ${APIFY_API_TOKEN}` }
-          }).catch(() => ({ data: { data: { status: 'FAILED' } } })),
+          }).catch(() => ({ data: { data: { status: 'FAILED' } } })) : Promise.resolve({ data: { data: { status: 'NOT_STARTED' } } }),
       
       // Handle sync results for Twitter
       search.twitterRunId?.startsWith('sync-')
         ? Promise.resolve({ data: { data: { status: 'SUCCEEDED' } } })
-        : axios.get(`https://api.apify.com/v2/actor-runs/${search.twitterRunId}`, {
+        : search.twitterRunId ? axios.get(`https://api.apify.com/v2/actor-runs/${search.twitterRunId}`, {
             headers: { 'Authorization': `Bearer ${APIFY_API_TOKEN}` }
-          }).catch(() => ({ data: { data: { status: 'FAILED' } } })),
+          }).catch(() => ({ data: { data: { status: 'FAILED' } } })) : Promise.resolve({ data: { data: { status: 'NOT_STARTED' } } }),
       
       // Handle sync results for Reddit
       search.redditRunId?.startsWith('sync-')
         ? Promise.resolve({ data: { data: { status: 'SUCCEEDED' } } })
-        : axios.get(`https://api.apify.com/v2/actor-runs/${search.redditRunId}`, {
+        : search.redditRunId ? axios.get(`https://api.apify.com/v2/actor-runs/${search.redditRunId}`, {
             headers: { 'Authorization': `Bearer ${APIFY_API_TOKEN}` }
-          }).catch(() => ({ data: { data: { status: 'FAILED' } } }))
+          }).catch(() => ({ data: { data: { status: 'FAILED' } } })) : Promise.resolve({ data: { data: { status: 'NOT_STARTED' } } }),
+
+      // Handle sync results for Instagram
+      search.instagramRunId?.startsWith('sync-')
+        ? Promise.resolve({ data: { data: { status: 'SUCCEEDED' } } })
+        : search.instagramRunId ? axios.get(`https://api.apify.com/v2/actor-runs/${search.instagramRunId}`, {
+            headers: { 'Authorization': `Bearer ${APIFY_API_TOKEN}` }
+          }).catch(() => ({ data: { data: { status: 'FAILED' } } })) : Promise.resolve({ data: { data: { status: 'NOT_STARTED' } } }),
+
+      // Handle sync results for YouTube (part of social media hashtag research)
+      search.tiktokRunId?.startsWith('sync-')
+        ? Promise.resolve({ data: { data: { status: 'SUCCEEDED' } } })
+        : search.tiktokRunId ? axios.get(`https://api.apify.com/v2/actor-runs/${search.tiktokRunId}`, {
+            headers: { 'Authorization': `Bearer ${APIFY_API_TOKEN}` }
+          }).catch(() => ({ data: { data: { status: 'FAILED' } } })) : Promise.resolve({ data: { data: { status: 'NOT_STARTED' } } }),
+
+      // Handle sync results for Truth Social
+      search.truthSocialRunId?.startsWith('sync-')
+        ? Promise.resolve({ data: { data: { status: 'SUCCEEDED' } } })
+        : search.truthSocialRunId ? axios.get(`https://api.apify.com/v2/actor-runs/${search.truthSocialRunId}`, {
+            headers: { 'Authorization': `Bearer ${APIFY_API_TOKEN}` }
+          }).catch(() => ({ data: { data: { status: 'FAILED' } } })) : Promise.resolve({ data: { data: { status: 'NOT_STARTED' } } }))
     ])
 
-    const [tiktokStatus, twitterStatus, redditStatus] = statusChecks.map(
+    const [tiktokStatus, twitterStatus, redditStatus, instagramStatus, youtubeStatus, truthSocialStatus] = statusChecks.map(
       (result) => result.status === 'fulfilled' ? result.value.data.data.status : 'FAILED'
     )
 
     // Determine overall status
-    const allStatuses = [tiktokStatus, twitterStatus, redditStatus]
+    const allStatuses = [tiktokStatus, twitterStatus, redditStatus, instagramStatus, youtubeStatus, truthSocialStatus]
     const isComplete = allStatuses.every(status => status === 'SUCCEEDED')
     const hasFailed = allStatuses.some(status => status === 'FAILED')
 
@@ -81,7 +102,10 @@ export async function GET(
       platforms: {
         tiktok: tiktokStatus,
         twitter: twitterStatus,
-        reddit: redditStatus
+        reddit: redditStatus,
+        instagram: instagramStatus,
+        youtube: youtubeStatus,
+        truthSocial: truthSocialStatus
       },
       progress: {
         completed: allStatuses.filter(status => status === 'SUCCEEDED').length,
